@@ -86,7 +86,7 @@ elif [ $1 -eq 2 ]; then #update
     issabel-dbprocess "update"  "$pathModule/setup/db" "$preversion"
     # restart daemon
     /usr/bin/systemctl daemon-reload
-    /sbin/service issabel-updaterd restart
+    /usr/sbin/service issabel-updaterd restart
 fi
 
 # The installer script expects to be in /tmp/new_module
