@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 1
+Release: 3
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,3 +124,6 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Fri Oct 09 2026 Issabel Foundation <info@issabel.org> - 6.0.0-3
+- Require the unversioned PHP packages (php-*, 8.3 on EL10) instead of the
+  versioned php8.4-*, which conflict with the PHP 8.3 in the netinstall base.
