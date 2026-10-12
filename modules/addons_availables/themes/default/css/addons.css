@@ -278,8 +278,9 @@ div.neo-module-content {
     -moz-border-radius: 0px 10px 10px 10px;
     -webkit-border-radius: 0px 10px 10px 10px;
     border-radius: 0px 10px 10px 10px;
-        background-color:#f0f0f0;
-    border: 1px solid #999;
+        background-color: var(--iss-body-bg, #f0f0f0);
+    border: 1px solid var(--iss-border, #999);
+    color: var(--iss-text, inherit);
 }
 
 /* MODAL */
