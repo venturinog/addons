@@ -111,9 +111,11 @@ class paloSantoAddons
 
 	    if (count($packages) > 0) {
 		$output = $retval = NULL;
+		// Los nombres de paquete vienen del WebService remoto: cada uno se
+		// escapa por separado antes de pasarlos al shell.
 		exec('rpm -q --qf '.escapeshellarg(
 		    'FOUND %{NAME} %{ARCH} %{EPOCH} %{VERSION} %{RELEASE}\n').
-		    ' '.implode(' ', $packages), $output, $retval);
+		    ' '.implode(' ', array_map('escapeshellarg', $packages)), $output, $retval);
 		$listaRPMS = array();
 		foreach ($output as  $key => $linea) {
 		    $campos = explode(' ', $linea);
@@ -133,7 +135,7 @@ class paloSantoAddons
                          $output2 = $retval2 = NULL;
                          exec('rpm -q --qf '.escapeshellarg(
                              'FOUND %{NAME} %{ARCH} %{EPOCH} %{VERSION} %{RELEASE}\n').
-                         ' '.$obsolete_packages[$packages[$key]], $output2, $retval2);
+                         ' '.escapeshellarg($obsolete_packages[$packages[$key]]), $output2, $retval2);
                          foreach($output2 as $linea2){
                                 $obsolete_campos = explode(' ', $linea2);
                                 if ($obsolete_campos[0] == 'FOUND') {

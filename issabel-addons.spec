@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 6
+Release: 7
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,18 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-7
+- Escape the addon data that comes from the marketplace. The name, version,
+  description and notes of every addon are published by the Web Service and
+  were interpolated into the page without escaping, so a compromised or
+  malicious catalogue could inject markup into the administrator's browser.
+- Escape the package names that the Web Service returns before handing them
+  to the shell. They were concatenated into an rpm query, so a catalogue
+  entry could run an arbitrary command on the server.
+- Translate the labels of the addon buttons and give the images of the addon
+  list an accessible name. The alternative text of the pagination arrows was
+  left empty because the page does not use the grid of the framework.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-6
 - Add the language keys the addon market code looks for and were missing from
   the base file: "Invalid addon name" and "The system can not connect to the
