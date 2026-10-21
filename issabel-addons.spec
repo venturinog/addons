@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 10
+Release: 11
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,13 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-11
+- Ask the machine type and not the hardware platform to the addon catalogue.
+  'uname -i' returns 'unknown' on EL10 x86-64, so the catalogue was filtered
+  by a value that no addon could match. The trailing newline that the shell
+  adds is removed as well, so the value that travels to the Web Service is
+  the architecture and nothing else.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-10
 - Translate the addon market into the 25 languages of the framework. The
   module only had English, Spanish, Persian and Ukrainian, so the page was

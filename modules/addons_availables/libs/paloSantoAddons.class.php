@@ -93,7 +93,11 @@ class paloSantoAddons
 	try {
 	    if(is_null($sNombre))
 		$sNombre = '';
-	    $architect = shell_exec('uname -i');	
+	    // La arquitectura se manda al WebService como filtro del catalogo.
+	    // 'uname -i' devuelve 'unknown' en EL10 x86-64, de modo que el
+	    // catalogo se filtraba por basura: se usa 'uname -m'. El salto de
+	    // linea que anade el shell se quita para que el valor coincida.
+	    $architect = trim(shell_exec('uname -m'));
 	    $iNumAddons = $client->getNumAddonsAvailables(
 		$issabel_version, 'name', $sNombre, 'all', FALSE,$architect);
 	    $recordset = $client->getAddonsAvailables(
