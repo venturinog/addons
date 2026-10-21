@@ -1,0 +1,21 @@
+[Unit]
+Description=Issabel Addons Update Helper
+Documentation=man:issabel-updaterd(8)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# El demonio se desvincula solo (pcntl_fork), asi que el proceso que
+# arranca systemd termina de inmediato y es el hijo el que sigue vivo. Por
+# eso el tipo es 'forking' y el PID se toma del fichero que escribe el.
+Type=forking
+PIDFile=/var/run/issupdaterd.pid
+# El demonio abre el socket tcp://localhost:20004, que es por donde el
+# módulo de la GUI le pide instalar, actualizar y desinstalar los addons.
+ExecStart=/usr/bin/php /opt/issabel/issabel-updater/issupdaterd
+Restart=on-failure
+RestartSec=5
+KillMode=mixed
+
+[Install]
+WantedBy=multi-user.target

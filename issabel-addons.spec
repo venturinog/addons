@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 12
+Release: 13
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -11,7 +11,7 @@ Source0: issabel-%{modname}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildArch: noarch
 Requires(pre): issabel-framework >= 5.0.0-1
-Requires(pre): chkconfig, php-soap
+Requires: php-cli, php-soap
 Requires: yum
 # commands: /usr/bin/uname
 Requires: coreutils
@@ -38,15 +38,21 @@ mv modules/ $RPM_BUILD_ROOT/var/www/html/
 # Additional (module-specific) files that can be handled by RPM
 mkdir -p $RPM_BUILD_ROOT/opt/issabel/
 mv setup/issabel-moduleconf $RPM_BUILD_ROOT/opt/issabel/issabel-updater
-mkdir -p $RPM_BUILD_ROOT/etc/init.d/
-mv $RPM_BUILD_ROOT/opt/issabel/issabel-updater/issabel-updaterd $RPM_BUILD_ROOT/etc/init.d/
-chmod +x $RPM_BUILD_ROOT/etc/init.d/issabel-updaterd
+# El demonio se instala como servicio de systemd. El script de init que
+# usaba el paquete no arrancaba en EL10: depende de
+# /etc/rc.d/init.d/functions y del binario 'daemon', y ninguno de los dos
+# existe en Rocky 10, de modo que salia con codigo 0 sin hacer nada.
+mkdir -p $RPM_BUILD_ROOT/etc/systemd/system/
+mv setup/etc/systemd/system/issabel-updaterd.service $RPM_BUILD_ROOT/etc/systemd/system/
+chmod 0644 $RPM_BUILD_ROOT/etc/systemd/system/issabel-updaterd.service
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d/
 
 ## Add the GNU Privacy Guard for the Postgresql91 repo
 mkdir -p $RPM_BUILD_ROOT/etc/pki/
 mv setup/etc/pki/rpm-gpg/ $RPM_BUILD_ROOT/etc/pki/
 rmdir setup/etc/pki
+rmdir setup/etc/systemd/system
+rmdir setup/etc/systemd
 
 # The following folder should contain all the data that is required by the installer,
 # that cannot be handled by RPM.
@@ -84,9 +90,6 @@ elif [ $1 -eq 2 ]; then #update
     # Removing addons_installed files
     rm -rf /var/www/html/modules/addons_installed
     issabel-dbprocess "update"  "$pathModule/setup/db" "$preversion"
-    # restart daemon
-    /usr/bin/systemctl daemon-reload
-    /usr/sbin/service issabel-updaterd restart
 fi
 
 # The installer script expects to be in /tmp/new_module
@@ -97,9 +100,12 @@ chown -R asterisk.asterisk /tmp/new_module/%{modname}
 php /tmp/new_module/%{modname}/setup/installer.php
 rm -rf /tmp/new_module
 
-# Install issabel-updaterd as a service
-chkconfig --add issabel-updaterd
-chkconfig --level 2345 issabel-updaterd on
+# Install issabel-updaterd as a systemd service. El demonio es el que abre el
+# socket tcp://localhost:20004 por donde la GUI instala y desinstala los
+# addons: si no corre, el boton de instalar no hace nada.
+/usr/bin/systemctl daemon-reload
+/usr/bin/systemctl enable issabel-updaterd
+/usr/bin/systemctl restart issabel-updaterd
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -112,18 +118,31 @@ if [ $1 -eq 0 ] ; then # Validation for desinstall this rpm
 
   echo "Dump and delete %{name} databases"
   issabel-dbprocess "delete" "$pathModule/setup/db"
+
+  echo "Stop the update daemon"
+  /usr/bin/systemctl disable --now issabel-updaterd
 fi
 
 %files
 %defattr(-, root, root)
 %{_localstatedir}/www/html/*
 /usr/share/issabel/module_installer/*
-/etc/init.d/issabel-updaterd
+/etc/systemd/system/issabel-updaterd.service
 /opt/issabel/issabel-updater
 /etc/pki/rpm-gpg/*
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-13
+- Install the update daemon as a systemd service. The package installed a
+  SysV script that does not start on EL10: it needs
+  /etc/rc.d/init.d/functions and the 'daemon' binary, and neither of them
+  exists in Rocky 10, so the script exited with code 0 without doing
+  anything. The daemon was therefore never running, the socket that the
+  GUI uses to install the addons was never opened, and the install button
+  did nothing. The unit file takes its place and the daemon now starts
+  with the system.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-12
 - Tell the user when the addon catalogue has nothing for this version. The
   marketplace publishes one catalogue per version of Issabel, and the notice
