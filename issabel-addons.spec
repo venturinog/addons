@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 7
+Release: 8
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,13 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-8
+- Show the messages of the addon market with the alert family of the theme.
+  The page used the jQuery UI classes, which the Modern theme does not define,
+  so the notice came out without any style. Each severity of the theme has
+  its own icon and title now, and the two browser alerts of the module were
+  replaced by the same notice.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-7
 - Escape the addon data that comes from the marketplace. The name, version,
   description and notes of every addon are published by the Web Service and

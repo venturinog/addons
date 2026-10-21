@@ -163,6 +163,14 @@ function do_listarAddonsHTML($smarty, $module_name, $local_templates_dir)
 	'showing'	   =>  _tr('Showing'),
 	'of'		   =>  _tr('of')
     ));
+    // Titulos del aviso de la pagina, uno por severidad (STYLE.md §3.1). Se
+    // emiten como JSON para que el JavaScript no lleve texto a fuego.
+    $smarty->assign('ADDONS_ALERT_TITLES', json_encode(array(
+        'error'   => _tr('ERROR'),
+        'success' => _tr('Success'),
+        'warning' => _tr('Warning'),
+        'info'    => _tr('Notice'),
+    ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
     return $smarty->fetch($local_templates_dir.'/reporte_addons.tpl');
 }
 

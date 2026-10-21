@@ -67,5 +67,7 @@ $arrLangModule=array(
 "Server id is not defined, you need to register your Issabel" => "El ID del Servidor no está definido. Usted necesita registrar su Issabel",
 "The system can not connect to the Web Service resource. Please check your Internet connection." => "El sistema no puede conectarse con el servidor web. Por favor revise su conexión a Internet",
 "Invalid addon name" => "Nombre de addon inválido",
+"Success" => "Correcto",
+"Notice" => "Aviso",
 );
 ?>

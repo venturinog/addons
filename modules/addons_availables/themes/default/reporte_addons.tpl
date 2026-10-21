@@ -1,12 +1,9 @@
-{* Este DIV se usa para mostrar los mensajes de error *}
-<div
-    id="neo-addons-error-message"
-    class="ui-corner-all"
-    style="display: none;">
-    <p>
-        <span class="ui-icon" style="float: left; margin-right: .3em;"></span>
-        <span id="neo-addons-error-message-text"></span>
-    </p>
+{* Aviso de la página. La familia de avisos del tema (STYLE.md §3.1) trae una
+   variante por severidad; el icono y el título cambian con ella. *}
+<div id="issabel_addons_alert" class="iss-alert iss-alert--info" style="display: none;">
+    <div class="iss-alert__title"><i id="issabel_addons_alert_icon" class="ti ti-info-circle"></i> <span id="issabel_addons_alert_title"></span></div>
+    <div class="iss-alert__content" id="issabel_addons_alert_text"></div>
+    <div class="iss-alert__dismiss"><i class="ti ti-x" onclick="ocultar_mensaje_addons();"></i></div>
 </div>
   <div class="neo-addons-header-row">
     <div class="neo-addons-header-row-filter">
@@ -58,3 +55,6 @@
   </div>
 </div>
 <div class="neo-modal-blockmask"></div>
+<script type="text/javascript">
+var issabel_addons_titulos = {$ADDONS_ALERT_TITLES};
+</script>

@@ -84,19 +84,17 @@ function do_listarAddons(list_offset)
 	},
 	function (respuesta) {
 		if (respuesta['action'] == 'error') {
-			mostrar_mensaje(respuesta['message'],true);
+			mostrar_mensaje(respuesta['message'],'error');
 		} else {
 			if(respuesta['empty_addons']){
 			    $('#addonlist')
 				.empty()
-				.append("<br />"+respuesta['empty_addons']);
-			    $('#addonlist').attr('align','center');
+				.append($('<div class="iss-addons__empty"></div>').text(respuesta['empty_addons']));
 			}
 			else{
 			    $('#addonlist')
 				    .empty()
 				    .append(respuesta['addonlist_html']);
-			    $('#addonlist').attr('align','');
 			}
 			addonlist_offset = respuesta['offset'];
 			addonlist_limit = respuesta['limit'];
@@ -213,26 +211,46 @@ function keyPressed(e)
     }
 }
 
-function mostrar_mensaje(s, is_error)
+/* Aviso de la página. La familia de avisos del tema (STYLE.md §3.1) trae una
+ * variante por severidad, así que el icono y el título se eligen con ella.
+ * El texto se inserta como texto plano: lo que llega aquí puede venir del
+ * demonio actualizador. */
+var issabel_addons_alert_timer = null;
+
+function mostrar_mensaje(mensaje, tipo)
 {
-	if(is_error){
-	   $('#neo-addons-error-message').addClass('ui-state-error');
-	   $('#neo-addons-error-message').removeClass('ui-state-focus');
-	   $('.ui-icon').addClass('ui-icon-alert');
-	   $('.ui-icon').removeClass('ui-icon-info');
-	}
-	else{
-	   $('#neo-addons-error-message').addClass('ui-state-focus');
-	   $('#neo-addons-error-message').removeClass('ui-state-error');
-	   $('.ui-icon').addClass('ui-icon-info');
-	   $('.ui-icon').removeClass('ui-icon-alert');
-	}
-	$('#neo-addons-error-message-text').text(s);
-	$('#neo-addons-error-message').show('slow', 'linear', function() {
-		setTimeout(function() {
-			$('#neo-addons-error-message').fadeOut();
-		}, 10000);
-	});
+    if (tipo !== 'error' && tipo !== 'success' && tipo !== 'warning' && tipo !== 'info')
+        tipo = 'info';
+
+    var iconos = {
+        error:   'ti-alert-triangle',
+        success: 'ti-circle-check',
+        warning: 'ti-alert-circle',
+        info:    'ti-info-circle'
+    };
+
+    var alerta = $('#issabel_addons_alert');
+    alerta.removeClass('iss-alert--error iss-alert--success iss-alert--warning iss-alert--info');
+    alerta.addClass('iss-alert--' + tipo);
+
+    $('#issabel_addons_alert_icon')
+        .removeClass('ti-alert-triangle ti-circle-check ti-alert-circle ti-info-circle')
+        .addClass(iconos[tipo]);
+
+    $('#issabel_addons_alert_title').text(issabel_addons_titulos[tipo]);
+    $('#issabel_addons_alert_text').text(mensaje);
+
+    alerta.stop(true, true).fadeIn('slow');
+    if (issabel_addons_alert_timer) clearTimeout(issabel_addons_alert_timer);
+    issabel_addons_alert_timer = setTimeout(function () {
+        alerta.fadeOut();
+    }, 10000);
+}
+
+function ocultar_mensaje_addons()
+{
+    if (issabel_addons_alert_timer) clearTimeout(issabel_addons_alert_timer);
+    $('#issabel_addons_alert').stop(true, true).fadeOut();
 }
 
 function do_iniciarCompra()
@@ -253,9 +271,9 @@ function do_iniciarInstallUpdate()
 		$('body').css('cursor','default');
 		$('.neo-addons-row-button-install-left.neo-addons-row-button-install-right.neo-addons-row-button-trial-left.neo-addons-row-button-trial-right').css('cursor','pointer');
 		if(respuesta["db_error"])
-		    mostrar_mensaje(respuesta["db_error"],true);
+		    mostrar_mensaje(respuesta["db_error"],'error');
 		else if(respuesta["error"]){
-		    mostrar_mensaje(respuesta["error"],true);
+		    mostrar_mensaje(respuesta["error"],'error');
 		    do_checkStatus();
 		}
 		else{
@@ -279,9 +297,9 @@ function do_iniciarUninstall()
 		$('body').css('cursor','default');
 		$('.neo-addons-row-button-uninstall-left.neo-addons-row-button-uninstall-right').css('cursor','pointer');
 		if(respuesta["db_error"])
-		    mostrar_mensaje(respuesta["db_error"],true);
+		    mostrar_mensaje(respuesta["db_error"],'error');
 		else if(respuesta["error"]){
-		    mostrar_mensaje(respuesta["error"],true);
+		    mostrar_mensaje(respuesta["error"],'error');
 		    do_checkStatus();
 		}
 		else{
@@ -353,7 +371,7 @@ function do_checkStatus()
 	function (respuesta) {
 	      if(respuesta["db_error"]){ // Error en la base de datos local
 		  ocultar_dialogo_progreso();
-		  mostrar_mensaje(respuesta["db_error"],true);
+		  mostrar_mensaje(respuesta["db_error"],'error');
 		  do_clearYum();
 		  transaction_in_progress = false;
 		  checking_dependencies = false;
@@ -364,7 +382,7 @@ function do_checkStatus()
 		  for(key in respuesta["error_description"])
 		      error += respuesta["error_description"][key]+"\n";
 		  ocultar_dialogo_progreso();
-		  mostrar_mensaje(error,true);
+		  mostrar_mensaje(error,'error');
 		  do_clearYum();
 		  transaction_in_progress = false;
 		  checking_dependencies = false;
@@ -391,11 +409,11 @@ function do_checkStatus()
 		  $('#feedback').text('');
 		  if(transaction_in_progress){
 		      if(respuesta["warnmsg"]){
-			  mostrar_mensaje(respuesta["warnmsg"],true);
+			  mostrar_mensaje(respuesta["warnmsg"],'warning');
 			  checking_dependencies = false;
 		      }
 		      else if(respuesta["transaction_status"])
-			  mostrar_mensaje(respuesta["transaction_status"],false);
+			  mostrar_mensaje(respuesta["transaction_status"],'success');
 		      if(!checking_dependencies)
 			  do_listarAddons(null);
 		      transaction_in_progress = false;
@@ -442,9 +460,9 @@ function cancelTransaction()
 	},
 	function (respuesta) {
 	    if(respuesta["error"])
-		alert(respuesta["error"]);
+		mostrar_mensaje(respuesta["error"],'error');
 	    else if(respuesta["db_error"])
-		alert(respuesta["db_error"]);
+		mostrar_mensaje(respuesta["db_error"],'error');
 	    else
 		transaction_cancelled = true;
 	});
@@ -471,9 +489,9 @@ function do_checkDependencies(serverId)
 		    $('body').css('cursor','default');
 		    $('.neo-addons-row-button-buy-left.neo-addons-row-button-buy-right').css('cursor','pointer');
 		    if(respuesta["db_error"])
-			mostrar_mensaje(respuesta["db_error"],true);
+			mostrar_mensaje(respuesta["db_error"],'error');
 		    else if(respuesta["error"]){
-			mostrar_mensaje(respuesta["error"],true);
+			mostrar_mensaje(respuesta["error"],'error');
 			do_checkStatus();
 		    }
 		    else{
