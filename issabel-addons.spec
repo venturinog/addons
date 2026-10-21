@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 14
+Release: 15
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,15 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
+- Accept the names of the addons that have more than one group. The rule
+  allowed a single dash after the first group, so the catalogue entries
+  whose name carries a second one, such as issabel-network-agent, were
+  rejected and their install button did nothing. Dots, slashes and semicolons
+  are still not allowed, so the name can be neither a path nor a command.
+- Tell the user why the name was rejected. The notice said the title of the
+  alert instead of the reason.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-14
 - Do not fail when the update daemon is not running. The writes to the daemon
   did not check that the socket was open, so with the daemon down they died

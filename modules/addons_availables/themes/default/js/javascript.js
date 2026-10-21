@@ -28,10 +28,12 @@ var estadoCliente =
 
 /* Nombre de un RPM de addon. Es la misma regla que aplica el servidor en
  * validAddonName() (STYLE.md §5): el servidor sigue siendo la fuente de la
- * verdad, esto solo evita un viaje de ida y vuelta. */
+ * verdad, esto solo evita un viaje de ida y vuelta. Admite los grupos que
+ * le siguen al primero, porque el catalogo publica nombres como
+ * 'issabel-network-agent'. */
 function validAddonName(name_rpm)
 {
-	return /^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/.test(name_rpm || '');
+	return /^[a-zA-Z0-9]+([_-][a-zA-Z0-9_]+)*$/.test(name_rpm || '');
 }
 
 $(document).ready(function() {
@@ -159,7 +161,7 @@ function enlazar_botones_addon()
 		var accion = $(this).data('accion');
 
 		if (!validAddonName(name_rpm)) {
-			mostrar_mensaje(issabel_addons_titulos.error, 'error');
+			mostrar_mensaje(issabel_addons_mensajes.invalid_name, 'error');
 			return;
 		}
 

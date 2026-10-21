@@ -77,5 +77,6 @@
 
 <script type="text/javascript">
 var issabel_addons_titulos = {$ADDONS_ALERT_TITLES};
+var issabel_addons_mensajes = {$ADDONS_MESSAGES};
 var cancel_confirm = {$ADDONS_CANCEL_CONFIRM};
 </script>

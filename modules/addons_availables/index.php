@@ -192,16 +192,25 @@ function renderAddonsPage($smarty, $module_name, $local_templates_dir)
     $smarty->assign('ADDONS_CANCEL_CONFIRM', json_encode(
         _tr('Are you sure you want to cancel this transaction?'),
         JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
+    // Mensajes que el JavaScript necesita y que no son titulos de aviso.
+    $smarty->assign('ADDONS_MESSAGES', json_encode(array(
+        'invalid_name' => _tr('Invalid addon name'),
+    ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
     return $smarty->fetch($local_templates_dir.'/reporte_addons.tpl');
 }
 
 /* Nombre de un RPM de addon. Es lo que aceptan el demonio actualizador y el
  * WebService, asi que se valida en el servidor antes de operar con el
  * (STYLE.md §5). El JavaScript lleva la misma regla para dar la respuesta
- * inmediata, pero el servidor sigue siendo la fuente de verdad. */
+ * inmediata, pero el servidor sigue siendo la fuente de verdad.
+ *
+ * El nombre admite los grupos que le siguen al primero: el catalogo
+ * publica nombres como 'issabel-network-agent', que el guion simple de
+ * antes rechazaba. Los puntos, las barras y el punto y coma siguen sin
+ * entrar, de modo que el nombre no puede ser una ruta ni un comando. */
 function validAddonName($name_rpm)
 {
-    return preg_match('/^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/', (string)$name_rpm) === 1;
+    return preg_match('/^[a-zA-Z0-9]+([_-][a-zA-Z0-9_]+)*$/', (string)$name_rpm) === 1;
 }
 
 /* Método AJAX que lista los addons. Las tareas que realiza este módulo son:
