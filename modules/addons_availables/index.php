@@ -151,9 +151,18 @@ function _moduleContent(&$smarty, $module_name)
  * se realiza en do_listarAddons. */
 function do_listarAddonsHTML($smarty, $module_name, $local_templates_dir)
 {
-	$smarty->assign(array(
+    return renderAddonsPage($smarty, $module_name, $local_templates_dir);
+}
+
+/* Render de la página del mercado de addons. Un único helper arma las
+ * variables de la plantilla y la sirve, para que la vista por defecto, el
+ * re-render y el estado de error sean siempre el mismo camino (STYLE.md §2). */
+function renderAddonsPage($smarty, $module_name, $local_templates_dir)
+{
+    $smarty->assign(array(
         'title'     	   =>  _tr('Addon Market'),
         'icon'      	   =>  'modules/'.$module_name.'/images/addons.png',
+	'filter_title'	   =>  _tr('Show Filter'),
 	'filter_by' 	   =>  _tr('Filter by'),
 	'available' 	   =>  _tr('Available'),
 	'installed' 	   =>  _tr('Installed'),
@@ -161,7 +170,14 @@ function do_listarAddonsHTML($smarty, $module_name, $local_templates_dir)
 	'update_available' =>  _tr('Update Available'),
 	'name'		   =>  _tr('Name'),
 	'showing'	   =>  _tr('Showing'),
-	'of'		   =>  _tr('of')
+	'of'		   =>  _tr('of'),
+        'search'             =>  _tr('Search'),
+        'cancel'             =>  _tr('Cancel'),
+        'cancel_transaction' =>  _tr('Cancel transaction'),
+        'lbl_start'          =>  _tr('Start'),
+        'lbl_previous'       =>  _tr('Previous'),
+        'lbl_next'           =>  _tr('Next'),
+        'lbl_end'            =>  _tr('End')
     ));
     // Titulos del aviso de la pagina, uno por severidad (STYLE.md §3.1). Se
     // emiten como JSON para que el JavaScript no lleve texto a fuego.
@@ -171,7 +187,20 @@ function do_listarAddonsHTML($smarty, $module_name, $local_templates_dir)
         'warning' => _tr('Warning'),
         'info'    => _tr('Notice'),
     ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
+    // Confirmacion que se pide antes de cancelar una transaccion en curso.
+    $smarty->assign('ADDONS_CANCEL_CONFIRM', json_encode(
+        _tr('Are you sure you want to cancel this transaction?'),
+        JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
     return $smarty->fetch($local_templates_dir.'/reporte_addons.tpl');
+}
+
+/* Nombre de un RPM de addon. Es lo que aceptan el demonio actualizador y el
+ * WebService, asi que se valida en el servidor antes de operar con el
+ * (STYLE.md §5). El JavaScript lleva la misma regla para dar la respuesta
+ * inmediata, pero el servidor sigue siendo la fuente de verdad. */
+function validAddonName($name_rpm)
+{
+    return preg_match('/^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/', (string)$name_rpm) === 1;
 }
 
 /* Método AJAX que lista los addons. Las tareas que realiza este módulo son:
@@ -256,7 +285,7 @@ function do_iniciarInstallUpdate($smarty, $module_name, $local_templates_dir)
     $json = new Services_JSON();
     Header('Content-Type: application/json');
 
-    if (!preg_match("/^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/", $name_rpm)) {
+    if (!validAddonName($name_rpm)) {
         $respuesta["error"] = _tr("Invalid addon name");
         return $json->encode($respuesta);
     }
@@ -293,7 +322,7 @@ function do_iniciarUninstall($smarty, $module_name, $local_templates_dir)
     $json = new Services_JSON();
     Header('Content-Type: application/json');
 
-    if (!preg_match("/^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/", $name_rpm)) {
+    if (!validAddonName($name_rpm)) {
         $respuesta["error"] = _tr("Invalid addon name");
         return $json->encode($respuesta);
     }
@@ -336,7 +365,7 @@ function do_checkDependencies($smarty, $module_name, $local_templates_dir)
     $json = new Services_JSON();
     Header('Content-Type: application/json');
 
-    if (!preg_match("/^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/", $name_rpm)) {
+    if (!validAddonName($name_rpm)) {
         $respuesta["error"] = _tr("Invalid addon name");
         return $json->encode($respuesta);
     }

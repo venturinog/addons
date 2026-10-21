@@ -1,46 +1,61 @@
 {foreach from=$arrData key=k item=data}
-  <div class="neo-addons-row">
-    <input type="hidden" id="url_moreinfo" value="{$data.url_moreinfo|escape}"/>
-    <div class="neo-addons-row-title">{$data.name|escape} - {$data.version|escape}-{$data.release|escape}</div>
-    <div class="neo-addons-row-author">{$by} {$data.developed_by|escape}</div>
-    <div class="neo-addons-row-icon"><img src="{$url_images|escape}/{$data.name_rpm|escape}.jpeg " width="65" height="65" alt="{$data.name|escape}" align="absmiddle" /></div>
-    <div class="neo-addons-row-desc">{$data.description|escape}</div>
-    <div class="neo-addons-row-location"><font style='font-weight:bold;'>{$location}: </font>{$data.location|escape}</div>
-    {if $data.note}
-    <div class="neo-addons-row-note"><font style='font-weight:bold;'>{$note}: </font>{$data.note|escape}</div>
-    {/if}
-    <div class="neo-addons-row-button">
-        {* El siguiente campo hidden contiene el nombre del RPM a manipular *}
-        <input type="hidden" id="name_rpm" value="{$data.name_rpm|escape}"/>
+  <article class="iss-card iss-addons__item">
+    <div class="iss-card__body iss-addons__item-body">
+      <img class="iss-addons__icon" src="{$url_images|escape}/{$data.name_rpm|escape}.jpeg" width="65" height="65" alt="{$data.name|escape}" onerror="this.style.visibility='hidden';">
+      <div class="iss-addons__main">
+        <div class="iss-addons__title">
+          <span class="iss-addons__name">{$data.name|escape}</span>
+          <span class="iss-addons__version">{$data.version|escape}-{$data.release|escape}</span>
+        </div>
+        <div class="iss-addons__author">{$by} {$data.developed_by|escape}</div>
+        <p class="iss-addons__desc">{$data.description|escape}</p>
+        <div class="iss-addons__meta">
+          <div class="iss-addons__metaitem"><span class="iss-addons__metalabel">{$location}:</span> {$data.location|escape}</div>
+          {if $data.note}
+          <div class="iss-addons__metaitem"><span class="iss-addons__metalabel">{$note}:</span> {$data.note|escape}</div>
+          {/if}
+        </div>
+        <a class="iss-addons__moreinfo" href="{$data.url_moreinfo|escape}" target="_blank" rel="noopener">{$more_info} <i class="ti ti-external-link"></i></a>
+      </div>
+      <div class="iss-addons__actions">
+        {* El nombre del RPM a manipular viaja en el propio boton. *}
         {if $data.installed_version == ''}
             {if $data.is_commercial and $data.fecha_compra eq 0}
-	    <input type="hidden" id="{$data.name_rpm|escape}_link" value="{$data.url_marketplace|escape}{$server_key|escape}&referer="/>
-	    {if $data.has_trialversion eq 1}
-	    <div class="neo-addons-row-button-trial-left">{$TRIAL}</div><div class="neo-addons-row-button-trial-right"><img width="17" height="17" alt="{$TRIAL|escape}" src="modules/{$module_name}/images/addons_icon_install.png"></div>
-	    {/if}
-            <div class="neo-addons-row-button-buy-left">{$BUY}</div>
-            <div class="neo-addons-row-button-buy-right"><img src="modules/{$module_name}/images/addons_icon_buy.png" width="19" height="18" alt="{$BUY|escape}" /></div>
+            <input type="hidden" id="{$data.name_rpm|escape}_link" value="{$data.url_marketplace|escape}{$server_key|escape}&amp;referer="/>
+            {if $data.has_trialversion eq 1}
+            <button type="button" class="btn btn-outline-secondary iss-addons__action" data-accion="install" data-name-rpm="{$data.name_rpm|escape}">
+                <i class="ti ti-player-play"></i> {$TRIAL}
+            </button>
+            {/if}
+            <button type="button" class="btn btn-outline-success iss-addons__action" data-accion="buy" data-name-rpm="{$data.name_rpm|escape}">
+                <i class="ti ti-shopping-cart"></i> {$BUY}
+            </button>
             {else}
-            <div class="neo-addons-row-button-install-left">{$INSTALL}</div>
-            <div class="neo-addons-row-button-install-right"><img src="modules/{$module_name}/images/addons_icon_install.png" width="17" height="17" alt="{$INSTALL|escape}" /></div>
+            <button type="button" class="btn btn-outline-primary iss-addons__action" data-accion="install" data-name-rpm="{$data.name_rpm|escape}">
+                <i class="ti ti-download"></i> {$INSTALL}
+            </button>
             {/if}
         {else}
         {if $data.can_update}
-            <div class="neo-addons-row-button-install-left tooltipInfo">{$UPDATE}{if !empty($data.upgrade_info)}<span>{$data.upgrade_info|escape}</span>{/if}</div>
-            <div class="neo-addons-row-button-install-right"><img src="modules/{$module_name}/images/addons_icon_update.png" width="20" height="17" alt="{$UPDATE|escape}" /></div>
+            <button type="button" class="btn btn-outline-primary iss-addons__action iss-addons__tooltip" data-accion="install" data-name-rpm="{$data.name_rpm|escape}">
+                <i class="ti ti-refresh"></i> {$UPDATE}
+                {if !empty($data.upgrade_info)}<span class="iss-addons__tip">{$data.upgrade_info|escape}</span>{/if}
+            </button>
         {/if}
-	<input type="hidden" id="{$data.name_rpm|escape}_installed" value="yes"/>
-        <div class="neo-addons-row-button-uninstall-left">{$UNINSTALL}</div>
-        <div class="neo-addons-row-button-uninstall-right"><img src="modules/{$module_name}/images/addons_icon_uninstall.png" width="17" height="17" alt="{$UNINSTALL|escape}" /></div>
-	{if $data.fecha_compra eq 0 and $data.is_commercial}
-	    <input type="hidden" id="{$data.name_rpm|escape}_link" value="{$data.url_marketplace|escape}{$server_key|escape}&referer="/>
-	    <div class="neo-addons-row-button-buy-left">{$BUY}</div>
-	    <div class="neo-addons-row-button-buy-right"><img src="modules/{$module_name}/images/addons_icon_buy.png" width="19" height="18" alt="{$BUY|escape}" /></div>
-	{/if}
+        <input type="hidden" id="{$data.name_rpm|escape}_installed" value="yes"/>
+        <button type="button" class="btn btn-outline-danger iss-addons__action" data-accion="uninstall" data-name-rpm="{$data.name_rpm|escape}">
+            <i class="ti ti-trash"></i> {$UNINSTALL}
+        </button>
+        {if $data.fecha_compra eq 0 and $data.is_commercial}
+        <input type="hidden" id="{$data.name_rpm|escape}_link" value="{$data.url_marketplace|escape}{$server_key|escape}&amp;referer="/>
+        <button type="button" class="btn btn-outline-success iss-addons__action" data-accion="buy" data-name-rpm="{$data.name_rpm|escape}">
+            <i class="ti ti-shopping-cart"></i> {$BUY}
+        </button>
         {/if}
+        {/if}
+      </div>
     </div>
-    <div class="neo-addons-row-moreinfo">{$more_info}...</div>
-  </div>
+  </article>
 {/foreach}
 
 <input type="hidden" name="callback" id="callback" value="" />

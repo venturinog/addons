@@ -69,5 +69,6 @@ $arrLangModule=array(
 "The system can not connect to the Web Service resource. Please check your Internet connection." => "Система не може підключитися до веб-сервісу. Будь ласка, перевірте з'єднання з Інтернетом.",
 "Success" => "Успіх",
 "Notice" => "Повідомлення",
+"Cancel transaction" => "Скасувати транзакцію",
 );
 ?>

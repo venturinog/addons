@@ -12,7 +12,6 @@ var dialogo_progreso_abierto = false;
 var transaction_in_progress = false;
 var checking_dependencies = false;
 var transaction_cancelled = false;
-var cancel_confirm = "";
 var refer = document.URL;
 
 /* El siguiente objeto es el estado de la interfaz del Addon Market. Al comparar
@@ -27,20 +26,28 @@ var estadoCliente =
 	fraccion:	0		// Fracción de completado, rango 0 hasta 1000.
 };
 
+/* Nombre de un RPM de addon. Es la misma regla que aplica el servidor en
+ * validAddonName() (STYLE.md §5): el servidor sigue siendo la fuente de la
+ * verdad, esto solo evita un viaje de ida y vuelta. */
+function validAddonName(name_rpm)
+{
+	return /^[a-zA-Z0-9]+(-[a-zA-Z0-9_]+)?$/.test(name_rpm || '');
+}
+
 $(document).ready(function() {
-	$('#imgPrimero, #imgPrimeroFooter').click(function () {
+	$('#imgPrimero').click(function () {
 		if (addonlist_offset != null && addonlist_offset > 0)
 			do_listarAddons(0);
         });
-	$('#imgAnterior, #imgAnteriorFooter').click(function () {
+	$('#imgAnterior').click(function () {
 		if (addonlist_offset != null && addonlist_offset >= addonlist_limit)
 			do_listarAddons(addonlist_offset - addonlist_limit);
 	});
-	$('#imgSiguiente, #imgSiguienteFooter').click(function () {
+	$('#imgSiguiente').click(function () {
 		if (addonlist_offset != null && addonlist_offset + addonlist_limit < addonlist_total)
 			do_listarAddons(addonlist_offset + addonlist_limit);
 	});
-	$('#imgFinal, #imgFinalFooter').click(function () {
+	$('#imgFinal').click(function () {
 		if (addonlist_offset != null) {
 			var offsetfinal = addonlist_total - (addonlist_total % addonlist_limit);
 			if (offsetfinal == addonlist_total)
@@ -49,8 +56,13 @@ $(document).ready(function() {
 				do_listarAddons(offsetfinal);
 		}
 	});
-        $('.neo-module-content').css("padding-bottom","0px");
-        $('#addonlist').css("border-bottom","1px solid #CCC");
+	$('#issabel_addons_cancel').click(function () {
+		if (confirm(cancel_confirm))
+			cancelTransaction();
+	});
+	$('#issabel_addons_modal_close').click(function () {
+		issabelAddonsModal('hide');
+	});
 
 	do_listarAddons(null);
 });
@@ -61,14 +73,13 @@ $(document).ready(function() {
  * actualiza la interfaz para que se corresponda al estado del sistema de
  * actualización.
  *
- * @param int	offset	Offset desde el cual iniciar el listado
+ * @param int	list_offset	Offset desde el cual iniciar el listado
  *
  * @return void
  */
 function do_listarAddons(list_offset)
 {
 	loadingAddons();
-        $('#addonlist').css("border-bottom","1px solid #CCC");
 	var filter_by = $('#filter_by').val();
 	var filter_nameRpm = $('#filter_namerpm').val();
 	addonlist_offset = null;
@@ -86,6 +97,7 @@ function do_listarAddons(list_offset)
 		if (respuesta['action'] == 'error') {
 			mostrar_mensaje(respuesta['message'],'error');
 		} else {
+			cancel_confirm = respuesta['cancel_confirm'];
 			if(respuesta['empty_addons']){
 			    $('#addonlist')
 				.empty()
@@ -99,76 +111,60 @@ function do_listarAddons(list_offset)
 			addonlist_offset = respuesta['offset'];
 			addonlist_limit = respuesta['limit'];
 			addonlist_total = respuesta['total'];
-			// se coloca opacidad en la botones de pagineo en caso de ser necesario
-			if (addonlist_offset == null || addonlist_offset <= 0)
-			      $('#imgPrimero, #imgPrimeroFooter').css({'opacity':0.3,'cursor':"auto"});
-			else
-			      $('#imgPrimero, #imgPrimeroFooter').css({'opacity':'','cursor':"pointer"});
-			if (addonlist_offset == null || addonlist_offset < addonlist_limit)
-			      $('#imgAnterior, #imgAnteriorFooter').css({'opacity':0.3,'cursor':"auto"});
-			else
-			      $('#imgAnterior, #imgAnteriorFooter').css({'opacity':'','cursor':"pointer"});
-			if (addonlist_offset == null || addonlist_offset + addonlist_limit >= addonlist_total)
-			      $('#imgSiguiente, #imgSiguienteFooter').css({'opacity':0.3,'cursor':"auto"});
-			else
-			      $('#imgSiguiente, #imgSiguienteFooter').css({'opacity':'','cursor':"pointer"});
-			if (addonlist_offset != null){
-			      var offsetfinal = addonlist_total - (addonlist_total % addonlist_limit);
-			      if (offsetfinal == addonlist_total)
-				      offsetfinal -= addonlist_limit;
-			      if (offsetfinal <= addonlist_offset)
-				      $('#imgFinal, #imgFinalFooter').css({'opacity':0.3,'cursor':"auto"});
-			      else
-				      $('#imgFinal, #imgFinalFooter').css({'opacity':'','cursor':"pointer"});
-			}
-			else
-			       $('#imgFinal, #imgFinalFooter').css({'opacity':0.3,'cursor':"auto"});
-			if(addonlist_total == 0)
-			    $('#addonlist_start_range, #addonlist_start_range_footer').text(0);
-			else
-			    $('#addonlist_start_range, #addonlist_start_range_footer').text(addonlist_offset + 1);
-			$('#addonlist_total, #addonlist_total_footer').text(addonlist_total);
-			$('#addonlist_end_range, #addonlist_end_range_footer').text(
-					(addonlist_offset + addonlist_limit >= addonlist_total)
-					? addonlist_total
-					: addonlist_offset + addonlist_limit);
-
-			$('.neo-addons-row-button-buy-left, .neo-addons-row-button-buy-right').unbind('click');
-			$('.neo-addons-row-button-install-left, .neo-addons-row-button-install-right').unbind('click');
-			$('.neo-addons-row-button-uninstall-left, .neo-addons-row-button-uninstall-right').unbind('click');
-			$('.neo-addons-row-moreinfo').unbind('click');
-			$('.neo-progress-bar-close').unbind('click');
-			$('.neo-addons-row-button-buy-left, .neo-addons-row-button-buy-right').click(function (e) {
-				$('body').css('cursor','wait');
-				$(this).css('cursor','wait');
-				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
-				checkServerID(true);
-			});
-			$('.neo-addons-row-button-install-left, .neo-addons-row-button-install-right, .neo-addons-row-button-trial-left, .neo-addons-row-button-trial-right').click(function () {
-				$('body').css('cursor','wait');
-				$(this).css('cursor','wait');
-				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
-				checkServerID(false);
-			});
-			$('.neo-addons-row-button-uninstall-left, .neo-addons-row-button-uninstall-right').click(function () {
-				$('body').css('cursor','wait');
-				$(this).css('cursor','wait');
-				estadoCliente.name_rpm = $(this).parent().children('#name_rpm').val();
-				do_iniciarUninstall();
-			});
-			$('.neo-addons-row-moreinfo').click(function () {
-				var url_moreinfo = $(this).parent().children('#url_moreinfo').val();
-				window.open(url_moreinfo);
-			});
-			$('.neo-progress-bar-close').click(function () {
-				var answer = confirm(respuesta["cancel_confirm"]);
-				if(answer)
-				    cancelTransaction();
-			});
+			actualizar_paginacion();
+			enlazar_botones_addon();
 			// Iniciar la revisión del status de la instalación
 			do_checkStatus();
-                        $('#addonlist').css("border-bottom","0px");
 		}
+	});
+}
+
+/* Estado de los botones de la paginación: se deshabilitan los que no
+ * llevan a ninguna página, en vez de atenuarlos. */
+function actualizar_paginacion()
+{
+	var offsetfinal = addonlist_total - (addonlist_total % addonlist_limit);
+
+	$('#imgPrimero').prop('disabled', addonlist_offset == null || addonlist_offset <= 0);
+	$('#imgAnterior').prop('disabled', addonlist_offset == null || addonlist_offset < addonlist_limit);
+	$('#imgSiguiente').prop('disabled', addonlist_offset == null || addonlist_offset + addonlist_limit >= addonlist_total);
+	$('#imgFinal').prop('disabled', addonlist_offset == null || offsetfinal <= addonlist_offset);
+
+	if (addonlist_total == 0)
+		$('#addonlist_start_range').text(0);
+	else
+		$('#addonlist_start_range').text(addonlist_offset + 1);
+	$('#addonlist_total').text(addonlist_total);
+	$('#addonlist_end_range').text(
+			(addonlist_offset + addonlist_limit >= addonlist_total)
+			? addonlist_total
+			: addonlist_offset + addonlist_limit);
+}
+
+/* Engancha los botones de cada addon. El nombre del RPM viaja en el propio
+ * boton (data-name-rpm), de modo que no hay que subir por el DOM ni buscar
+ * un campo oculto que se repite en todas las filas. */
+function enlazar_botones_addon()
+{
+	$('.iss-addons__action').off('click');
+	$('.iss-addons__action').on('click', function () {
+		var name_rpm = $(this).data('name-rpm');
+		var accion = $(this).data('accion');
+
+		if (!validAddonName(name_rpm)) {
+			mostrar_mensaje(issabel_addons_titulos.error, 'error');
+			return;
+		}
+
+		estadoCliente.name_rpm = name_rpm;
+		$('body').css('cursor','wait');
+
+		if (accion == 'uninstall')
+			do_iniciarUninstall();
+		else if (accion == 'buy')
+			checkServerID(true);
+		else
+			checkServerID(false);
 	});
 }
 
@@ -180,11 +176,8 @@ function checkServerID(isPurchase)
         rawmode:    'yes'
     }, function(response) {
         var arrData = response.message;
-        var statusResponse = response.statusResponse;
-        var error = response.error;
 
         $('body').css('cursor','default');
-        $('.neo-addons-row-button-buy-left, .neo-addons-row-button-buy-right, .neo-addons-row-button-install-left, .neo-addons-row-button-install-right, .neo-addons-row-button-trial-left, .neo-addons-row-button-trial-right').css('cursor','pointer');
 
         if(arrData["registered"]=="yes-all"){
             if(isPurchase)
@@ -269,7 +262,6 @@ function do_iniciarInstallUpdate()
 	},
 	function (respuesta) {
 		$('body').css('cursor','default');
-		$('.neo-addons-row-button-install-left.neo-addons-row-button-install-right.neo-addons-row-button-trial-left.neo-addons-row-button-trial-right').css('cursor','pointer');
 		if(respuesta["db_error"])
 		    mostrar_mensaje(respuesta["db_error"],'error');
 		else if(respuesta["error"]){
@@ -279,7 +271,7 @@ function do_iniciarInstallUpdate()
 		else{
 		    transaction_in_progress = true;
 		    mostrar_dialogo_progreso();
-		    $(".neo-progress-bar-title").text(respuesta["title"]+" "+estadoCliente.name_rpm);
+		    $("#issabel_addons_modal_title").text(respuesta["title"]+" "+estadoCliente.name_rpm);
 		    intervalCheckStatus = setInterval("do_checkStatus()",1000);
 		}
 	});
@@ -295,7 +287,6 @@ function do_iniciarUninstall()
 	},
 	function (respuesta) {
 		$('body').css('cursor','default');
-		$('.neo-addons-row-button-uninstall-left.neo-addons-row-button-uninstall-right').css('cursor','pointer');
 		if(respuesta["db_error"])
 		    mostrar_mensaje(respuesta["db_error"],'error');
 		else if(respuesta["error"]){
@@ -305,60 +296,82 @@ function do_iniciarUninstall()
 		else{
 		    transaction_in_progress = true;
 		    mostrar_dialogo_progreso();
-		    $(".neo-progress-bar-title").text(respuesta["title"]+" "+estadoCliente.name_rpm);
+		    $("#issabel_addons_modal_title").text(respuesta["title"]+" "+estadoCliente.name_rpm);
 		    intervalCheckStatus = setInterval("do_checkStatus()",1000);
 		}
 	});
 }
 
+/* El modal es el del tema, pero su JavaScript no se carga dentro del iframe
+ * del módulo: se muestra y se esconde a mano, igual que hace el modal del
+ * CDR (reports/modules/cdrreport/themes/default/js/javascript.js). */
+function issabelAddonsModal(accion)
+{
+    var modal = document.getElementById('issabel_addons_modal');
+    var backdrop = document.getElementById('issabel_addons_backdrop');
+    if (!modal) return;
+
+    var api = null;
+    if (window.bootstrap && window.bootstrap.Modal) {
+        api = window.bootstrap.Modal;
+    } else if (window.tabler && window.tabler.bootstrap && window.tabler.bootstrap.Modal) {
+        api = window.tabler.bootstrap.Modal;
+    } else if (window.tabler && window.tabler.Modal) {
+        api = window.tabler.Modal;
+    }
+
+    if (api) {
+        var inst = api.getOrCreateInstance(modal);
+        if (accion === 'hide') inst.hide(); else inst.show();
+        return;
+    }
+    if ($.fn.modal) {
+        $(modal).modal(accion);
+        return;
+    }
+    if (accion === 'hide') {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        if (backdrop) {
+            backdrop.classList.remove('show');
+            backdrop.style.display = 'none';
+        }
+    } else {
+        modal.classList.add('show');
+        modal.style.display = 'block';
+        if (backdrop) {
+            backdrop.classList.add('show');
+            backdrop.style.display = 'block';
+        }
+    }
+}
+
 function neo_upgrade_progress_bar(percentage)
 {
-    $('.neo-progress-bar-percentage').css('width',percentage+'%');
-    $('.neo-progress-bar-percentage-tag').html(percentage+'%');
-    $('.neo-progress-bar-progress').css('width',percentage+'%');
+    $('#issabel_addons_progress').css('width',percentage+'%');
+    $('#issabel_addons_progress').attr('aria-valuenow',percentage);
+    $('#issabel_addons_progress_value').text(percentage+'%');
 }
 
 function mostrar_dialogo_progreso()
 {
-    var maskHeight = $(document).height();
-    var maskWidth = $(window).width();
-
-    $('.neo-modal-blockmask').css({'width':maskWidth,'height':maskHeight});
-
-    $('.neo-modal-blockmask').fadeIn(600);
-    $('.neo-modal-blockmask').fadeTo("fast",0.8);
-
-    var winH = $(window).height();
-    var winW = $(window).width();
-
-    $('.neo-modal-box').css('top',  winH/2-$('.neo-modal-box').height()/2);
-    $('.neo-modal-box').css('left', winW/2-$('.neo-modal-box').width()/2);
-
-    $('.neo-modal-box').fadeIn(2000);
+    issabelAddonsModal('show');
     dialogo_progreso_abierto = true;
 }
 
 function ocultar_dialogo_progreso()
 {
-	$('.neo-modal-box').fadeOut(10);
-	$('.neo-modal-blockmask').fadeOut(20);
+    issabelAddonsModal('hide');
 	neo_upgrade_progress_bar(0);
 	dialogo_progreso_abierto = false;
 }
 
 function loadingAddons()
 {
-     var loadingHTML = "<div style='text-align: center; padding: 40px;'>"
-			    +"<img src='images/loading.gif' />"
-		      +"</div>";
+     var loadingHTML = '<div class="iss-addons__empty">'
+		    +'<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>'
+		      +'</div>';
      $('#addonlist').empty().append(loadingHTML);
-}
-
-function neo_upgrade_progress_bar(percentage)
-{
-	$('.neo-progress-bar-percentage').css('width',percentage+'%');
-	$('.neo-progress-bar-percentage-tag').html(percentage+'%');
-	$('.neo-progress-bar-progress').css('width',percentage+'%');
 }
 
 function do_checkStatus()
@@ -398,7 +411,7 @@ function do_checkStatus()
 			checking_dependencies = true;
 		  }
 		  $('#feedback').text(respuesta["info"]);
-		  $('.neo-progress-bar-title').text(respuesta["title"]);
+		  $('#issabel_addons_modal_title').text(respuesta["title"]);
 		  neo_upgrade_progress_bar(respuesta["percentage"]);
 		  transaction_in_progress = true;
 	      }
@@ -432,9 +445,9 @@ function do_checkStatus()
 function do_clearYum()
 {
       $.post('index.php?menu=' + module_name + '&rawmode=yes', {
-		menu:		module_name,
-		rawmode:	'yes',
-		action:		'clearYum'
+	menu:		module_name,
+	rawmode:	'yes',
+	action:		'clearYum'
 	},
 	function (respuesta) {
 	});
@@ -443,9 +456,9 @@ function do_clearYum()
 function do_deleteActionTmp()
 {
       $.post('index.php?menu=' + module_name + '&rawmode=yes', {
-		menu:		module_name,
-		rawmode:	'yes',
-		action:		'deleteActionTmp'
+	menu:		module_name,
+	rawmode:	'yes',
+	action:		'deleteActionTmp'
 	},
 	function (respuesta) {
 	});
@@ -454,9 +467,9 @@ function do_deleteActionTmp()
 function cancelTransaction()
 {
     $.post('index.php?menu=' + module_name + '&rawmode=yes', {
-		menu:		module_name,
-		rawmode:	'yes',
-		action:		'cancelTransaction'
+	menu:		module_name,
+	rawmode:	'yes',
+	action:		'cancelTransaction'
 	},
 	function (respuesta) {
 	    if(respuesta["error"])
@@ -487,7 +500,6 @@ function do_checkDependencies(serverId)
 	    },
 	    function (respuesta) {
 		    $('body').css('cursor','default');
-		    $('.neo-addons-row-button-buy-left.neo-addons-row-button-buy-right').css('cursor','pointer');
 		    if(respuesta["db_error"])
 			mostrar_mensaje(respuesta["db_error"],'error');
 		    else if(respuesta["error"]){
@@ -498,7 +510,7 @@ function do_checkDependencies(serverId)
 			transaction_in_progress = true;
 			checking_dependencies = true;
 			mostrar_dialogo_progreso();
-			$(".neo-progress-bar-title").text(respuesta["title"]+" "+estadoCliente.name_rpm);
+			$("#issabel_addons_modal_title").text(respuesta["title"]+" "+estadoCliente.name_rpm);
 			intervalCheckStatus = setInterval("do_checkStatus()",1000);
 		    }
 	    });

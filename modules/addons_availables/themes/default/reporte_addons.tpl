@@ -5,56 +5,77 @@
     <div class="iss-alert__content" id="issabel_addons_alert_text"></div>
     <div class="iss-alert__dismiss"><i class="ti ti-x" onclick="ocultar_mensaje_addons();"></i></div>
 </div>
-  <div class="neo-addons-header-row">
-    <div class="neo-addons-header-row-filter">
-      {$filter_by}:
-      <select id="filter_by" class="neo-addons-header-row-select" name="filter_by" onchange="javascript:do_listarAddons(null)">
-        <option value="available">{$available}</option>
-        <option value="installed">{$installed}</option>
-        <option value="purchased">{$purchased}</option>
-        <option value="update_available">{$update_available}</option>
-      </select>
-    </div>
-    <div class="neo-addons-header-row-filter">
-      <span style="vertical-align:top;">{$name}:</span>
-      <input type="text" id="filter_namerpm" value="" name="filter_namerpm" onkeypress="javascript:keyPressed(event)">
-      <a onclick="javascript:do_listarAddons(null)" href="#">
-      <img width="19" height="21" border="0" align="absmiddle" src="modules/{$module_name}/images/searchw.png" alt="">
-      </a>
-    </div>
-    <div class="neo-addons-header-row-navigation">
-        <img id="imgPrimero" style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-first.gif" width="16" height="16" alt='{$lblStart}' align='absmiddle' />
-        <img id="imgAnterior"  style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-previous.gif" width="16" height="16" alt='{$lblPrevious}' align='absmiddle' />
-        ({$showing} <span id="addonlist_start_range">?</span> - <span id="addonlist_end_range">?</span> {$of} <span id="addonlist_total">?</span>)
-        <img id="imgSiguiente" style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-next.gif" width="16" height="16" alt='{$lblNext}' align='absmiddle' />
-        <img id="imgFinal" style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-last.gif" width="16" height="16" alt='{$lblEnd}' align='absmiddle' />
-    </div>
-  </div>
-<div id="addonlist">
-<div style="text-align: center; padding: 40px;">
-<img src="images/loading.gif" />
+
+<div class="iss-form">
+    <section class="iss-card">
+        <div class="iss-card__header"><i class="ti ti-filter"></i> {$filter_title}</div>
+        <div class="iss-card__body iss-formgrid">
+            <div class="iss-field">
+                <span class="iss-field__label">{$filter_by}</span>
+                <span class="iss-field__control">
+                    <select id="filter_by" class="form-select" name="filter_by" onchange="javascript:do_listarAddons(null)">
+                        <option value="available">{$available}</option>
+                        <option value="installed">{$installed}</option>
+                        <option value="purchased">{$purchased}</option>
+                        <option value="update_available">{$update_available}</option>
+                    </select>
+                </span>
+            </div>
+            <div class="iss-field">
+                <span class="iss-field__label">{$name}</span>
+                <span class="iss-field__control">
+                    <div class="iss-addons__search">
+                        <input type="text" id="filter_namerpm" class="form-control" value="" name="filter_namerpm" onkeypress="javascript:keyPressed(event)">
+                        <button class="btn btn-outline-secondary" type="button" onclick="javascript:do_listarAddons(null)" aria-label="{$search}" title="{$search}">
+                            <i class="ti ti-search"></i>
+                        </button>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </section>
 </div>
-</div>
-     <div id="footer" style="background: url(../../../images/addons_header_row_bg.png) repeat-x top; width: 100%; height:40px;"  >
-     <div class="neo-addons-header-row-navigation">
-        <img id="imgPrimeroFooter" style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-first.gif" width="16" height="16" alt='{$lblStart}' align='absmiddle' />
-        <img id="imgAnteriorFooter"  style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-previous.gif" width="16" height="16" alt='{$lblPrevious}' align='absmiddle' />
-        ({$showing} <span id="addonlist_start_range_footer">?</span> - <span id="addonlist_end_range_footer">?</span> {$of} <span id="addonlist_total_footer">?</span>)
-        <img id="imgSiguienteFooter" style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-next.gif" width="16" height="16" alt='{$lblNext}' align='absmiddle' />
-        <img id="imgFinalFooter" style="cursor: pointer;" src="modules/{$module_name}/images/table-arrow-last.gif" width="16" height="16" alt='{$lblEnd}' align='absmiddle' />
+
+<div id="addonlist" class="iss-addons__list"></div>
+
+<nav class="iss-addons__pager">
+    <div class="iss-grid__nav">
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="imgPrimero" aria-label="{$lbl_start}" title="{$lbl_start}"><i class="ti ti-chevrons-left"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="imgAnterior" aria-label="{$lbl_previous}" title="{$lbl_previous}"><i class="ti ti-chevron-left"></i></button>
+        <span class="iss-addons__range">{$showing} <span id="addonlist_start_range">?</span> - <span id="addonlist_end_range">?</span> {$of} <span id="addonlist_total">?</span></span>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="imgSiguiente" aria-label="{$lbl_next}" title="{$lbl_next}"><i class="ti ti-chevron-right"></i></button>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="imgFinal" aria-label="{$lbl_end}" title="{$lbl_end}"><i class="ti ti-chevrons-right"></i></button>
     </div>
+</nav>
+
+{* Progreso de la transacción. El componente es el del tema; su JavaScript no
+   está disponible dentro del iframe del módulo, así que el propio script del
+   módulo lo muestra y lo esconde a mano (igual que el modal del CDR). *}
+<div class="modal" id="issabel_addons_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="issabel_addons_modal_title"></h5>
+                <button type="button" class="btn-close" id="issabel_addons_modal_close" aria-label="{$cancel}"></button>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" id="issabel_addons_progress" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="iss-addons__progress">
+                    <span class="iss-addons__progress-value" id="issabel_addons_progress_value">0%</span>
+                    <span id="feedback"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-danger" id="issabel_addons_cancel">{$cancel_transaction}</button>
+            </div>
+        </div>
     </div>
-<!-- Neo Progress Bar -->
-<div class="neo-modal-box">
-  <div id="container">
-    <div class="neo-progress-bar-percentage"><span class="neo-progress-bar-percentage-tag"></span></div>
-    <div class="neo-progress-bar"><div class="neo-progress-bar-progress"></div></div>
-    <span class="neo-progress-bar-label"><img src="images/loading2.gif" align="absmiddle" />&nbsp;<span id="feedback"></span></span>
-    <div class="neo-progress-bar-title"></div>
-    <div class="neo-progress-bar-close"></div>
-  </div>
 </div>
-<div class="neo-modal-blockmask"></div>
+<div class="modal-backdrop" id="issabel_addons_backdrop" style="display: none;"></div>
+
 <script type="text/javascript">
 var issabel_addons_titulos = {$ADDONS_ALERT_TITLES};
+var cancel_confirm = {$ADDONS_CANCEL_CONFIRM};
 </script>

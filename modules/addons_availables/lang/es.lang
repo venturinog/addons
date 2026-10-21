@@ -69,5 +69,6 @@ $arrLangModule=array(
 "Invalid addon name" => "Nombre de addon inválido",
 "Success" => "Correcto",
 "Notice" => "Aviso",
+"Cancel transaction" => "Cancelar la transacción",
 );
 ?>

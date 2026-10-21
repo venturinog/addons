@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 8
+Release: 9
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,21 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-9
+- Bring the addon market onto the theme grid. The page was built with the
+  markup of Issabel 5: a header row of its own, the list of addons as a set
+  of absolutely positioned divs, the pagination as a row of images and the
+  progress dialog as a modal of its own. The filter is now a card of the
+  theme, every addon is a card, the actions are buttons with the icons of the
+  theme, the pagination is a row of buttons that are disabled when they do
+  not lead anywhere, and the progress is shown in the modal of the theme.
+- Rewrite the stylesheet of the module with the tokens of the theme. It had
+  102 hexadecimal colours and 18 rgba() of its own, and the ones of the
+  buttons, the dialog and the progress bar did not survive the dark mode.
+- Remove the images that the new design does not use: the arrows of the
+  pagination, the backgrounds of the buttons and the dialog, the icons of the
+  actions and the image of the search.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-8
 - Show the messages of the addon market with the alert family of the theme.
   The page used the jQuery UI classes, which the Modern theme does not define,
