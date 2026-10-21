@@ -253,6 +253,17 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
         return $json->encode($respuesta);
     }
     if(count($listaAddons) <= 0){
+	// El marketplace publica un catálogo por versión de Issabel. Si el de
+	// esta versión está vacío, avisar de eso es muy distinto de decir que
+	// la búsqueda no ha encontrado nada: lo primero es del servidor y lo
+	// segundo, del filtro de la página.
+	$catalogo = $oAddons->getCatalogueCount();
+	if (!is_null($catalogo) && $catalogo == 0) {
+	    $respuesta['catalogue_empty'] = TRUE;
+	    $respuesta['catalogue_empty_message'] = sprintf(
+		_tr('No addons have been published for Issabel %s yet.'),
+		$oAddons->getIssabelVersion());
+	}
 	$respuesta['empty_addons'] = _tr("No addons match your search criteria");
 	return $json->encode($respuesta);
     }

@@ -35,6 +35,7 @@ class paloSantoAddons
         'action'    =>  NULL,
     );
     private $_errMsg = "";
+    private $_issabel_version = NULL;
     
     private function _getDB()
     {
@@ -82,22 +83,71 @@ class paloSantoAddons
         return null;
     }
 
-    private function _getAddons($sNombre)
+    /**
+     * Versión de Issabel de esta instalación. Es la que se manda al WebService
+     * como filtro del catálogo: el marketplace publica un catálogo por
+     * versión, de modo que una versión que no tiene addons publicados
+     * devuelve un catálogo vacío.
+     *
+     * @return string
+     */
+    public function getIssabelVersion()
     {
         global $arrConf;
-        $pDBSetting = new paloDB($arrConf['issabel_dsn']['settings']);
-        $issabel_version = get_key_settings($pDBSetting,'issabel_version_release');
+
+        if (is_null($this->_issabel_version)) {
+            $pDBSetting = new paloDB($arrConf['issabel_dsn']['settings']);
+            $this->_issabel_version = get_key_settings($pDBSetting,'issabel_version_release');
+        }
+        return $this->_issabel_version;
+    }
+
+    /**
+     * Arquitectura de la máquina, que el marketplace usa como filtro. 'uname
+     * -i' devuelve 'unknown' en EL10 x86-64, de modo que el catálogo se
+     * filtraba por basura: se usa 'uname -m'. El salto de linea que añade el
+     * shell se quita para que el valor coincida.
+     *
+     * @return string
+     */
+    private function _getArchitecture()
+    {
+        return trim(shell_exec('uname -m'));
+    }
+
+    /**
+     * Número de addons que publica el marketplace para la versión de Issabel
+     * de esta instalación, sin los filtros de la página. Sirve para
+     * distinguir «el catálogo está vacío» de «el filtro no coincide con
+     * nada»: son dos cosas muy distintas para quien está delante de la
+     * pantalla.
+     *
+     * @return mixed NULL si el WebService no responde, o el número de addons
+     */
+    public function getCatalogueCount()
+    {
+        $client = $this->_getSOAP();
+        if (is_null($client)) return NULL;
+        try {
+            return (int) $client->getNumAddonsAvailables(
+                $this->getIssabelVersion(), 'name', '', 'all', FALSE,
+                $this->_getArchitecture());
+        } catch (SoapFault $e) {
+            $this->_errMsg = $e->getMessage();
+            return NULL;
+        }
+    }
+
+    private function _getAddons($sNombre)
+    {
+        $issabel_version = $this->getIssabelVersion();
 
         $this->_errMsg = '';
     	if (is_null($client = $this->_getSOAP())) return NULL;
 	try {
 	    if(is_null($sNombre))
 		$sNombre = '';
-	    // La arquitectura se manda al WebService como filtro del catalogo.
-	    // 'uname -i' devuelve 'unknown' en EL10 x86-64, de modo que el
-	    // catalogo se filtraba por basura: se usa 'uname -m'. El salto de
-	    // linea que anade el shell se quita para que el valor coincida.
-	    $architect = trim(shell_exec('uname -m'));
+	    $architect = $this->_getArchitecture();
 	    $iNumAddons = $client->getNumAddonsAvailables(
 		$issabel_version, 'name', $sNombre, 'all', FALSE,$architect);
 	    $recordset = $client->getAddonsAvailables(

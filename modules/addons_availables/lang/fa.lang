@@ -70,5 +70,6 @@ $arrLangModule=array(
 "Success" => "موفقیت",
 "Notice" => "اطلاع",
 "Cancel transaction" => "لغو تراکنش",
+"No addons have been published for Issabel %s yet." => "هنوز هیچ افزونه‌ای برای Issabel %s منتشر نشده است.",
 );
 ?>

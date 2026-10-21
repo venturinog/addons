@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Success" => "成功",
 "Notice" => "お知らせ",
 "Cancel transaction" => "トランザクションをキャンセル",
+"No addons have been published for Issabel %s yet." => "Issabel %s 用のアドオンはまだ公開されていません。",
 );
 ?>

@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Success" => "Başarılı",
 "Notice" => "Bildirim",
 "Cancel transaction" => "İşlemi iptal et",
+"No addons have been published for Issabel %s yet." => "Issabel %s için henüz hiçbir eklenti yayınlanmadı.",
 );
 ?>

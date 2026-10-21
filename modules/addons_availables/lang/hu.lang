@@ -44,5 +44,6 @@ $arrLangModule=array(
 "Success" => "Siker",
 "Notice" => "Értesítés",
 "Cancel transaction" => "Tranzakció megszakítása",
+"No addons have been published for Issabel %s yet." => "Az Issabel %s verzióhoz még nem jelent meg egyetlen kiegészítő sem.",
 );
 ?>

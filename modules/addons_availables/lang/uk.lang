@@ -70,5 +70,6 @@ $arrLangModule=array(
 "Success" => "Успіх",
 "Notice" => "Повідомлення",
 "Cancel transaction" => "Скасувати транзакцію",
+"No addons have been published for Issabel %s yet." => "Аддонів для Issabel %s ще не опубліковано.",
 );
 ?>

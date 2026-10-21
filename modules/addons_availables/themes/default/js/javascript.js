@@ -98,7 +98,14 @@ function do_listarAddons(list_offset)
 			mostrar_mensaje(respuesta['message'],'error');
 		} else {
 			cancel_confirm = respuesta['cancel_confirm'];
-			if(respuesta['empty_addons']){
+			if(respuesta['catalogue_empty']){
+			    /* El catálogo del marketplace está vacío para la versión de
+			     * Issabel de esta instalación. El aviso lo explica; el
+			     * área de lista se deja vacía para no repetir el aviso. */
+			    $('#addonlist').empty();
+			    mostrar_mensaje(respuesta['catalogue_empty_message'],'info');
+			}
+			else if(respuesta['empty_addons']){
 			    $('#addonlist')
 				.empty()
 				.append($('<div class="iss-addons__empty"></div>').text(respuesta['empty_addons']));

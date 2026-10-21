@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 11
+Release: 12
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,15 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-12
+- Tell the user when the addon catalogue has nothing for this version. The
+  marketplace publishes one catalogue per version of Issabel, and the notice
+  that the page showed was "No addons match your search criteria", which
+  blames the search for a catalogue that the server has not published yet.
+  The page now says which version was asked for, and keeps the old message
+  for the case in which the catalogue has content but the filter does not
+  match anything.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-11
 - Ask the machine type and not the hardware platform to the addon catalogue.
   'uname -i' returns 'unknown' on EL10 x86-64, so the catalogue was filtered
