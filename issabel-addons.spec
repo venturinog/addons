@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 9
+Release: 10
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,13 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-10
+- Translate the addon market into the 25 languages of the framework. The
+  module only had English, Spanish, Persian and Ukrainian, so the page was
+  shown in English in the other 21 languages. The 21 files were added with
+  the same 44 keys, and the 13 messages that the Persian file carried in
+  English were translated.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-9
 - Bring the addon market onto the theme grid. The page was built with the
   markup of Issabel 5: a header row of its own, the list of addons as a set
