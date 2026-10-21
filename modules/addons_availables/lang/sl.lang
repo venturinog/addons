@@ -45,5 +45,6 @@ $arrLangModule=array(
 "Notice" => "Obvestilo",
 "Cancel transaction" => "Prekliči transakcijo",
 "No addons have been published for Issabel %s yet." => "Za Issabel %s še ni objavljenih dodatkov.",
+"The addon update service is not running." => "Storitev za posodobitev dodatkov ne teče.",
 );
 ?>

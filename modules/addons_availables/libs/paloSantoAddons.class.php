@@ -499,37 +499,56 @@ class paloSantoAddons
      */
     function installAddon($name_rpm)
     {
-	$socket = $this->_getUpdater();
-	fwrite($socket, "addconfirm $name_rpm\n");
-	return fgets($socket);
+	return $this->_escribirDemonio("addconfirm $name_rpm");
     }
 
     function uninstallAddon($name_rpm)
     {
-	$socket = $this->_getUpdater();
-	fwrite($socket, "removeconfirm $name_rpm\n");
-	return fgets($socket);
+	return $this->_escribirDemonio("removeconfirm $name_rpm");
     }
 
     function checkDependencies($name_rpm)
     {
-	$socket = $this->_getUpdater();
-	fwrite($socket, "testadd $name_rpm\n");
-	return fgets($socket);
+	return $this->_escribirDemonio("testadd $name_rpm");
     }
     
     function cancelTransaction()
     {
-	$socket = $this->_getUpdater();
-	fwrite($socket, "cancel\n");
-	return fgets($socket);
+	return $this->_escribirDemonio("cancel");
     }
 
     function clearYum()
     {
+	return $this->_escribirDemonio("clear");
+    }
+
+    /**
+     * Manda una orden al demonio actualizador y devuelve lo que responde.
+     * Si el demonio no esta corriendo, el socket es NULL: antes de arreglarlo
+     * esto reventaba con un TypeError de PHP 8 y la peticion AJAX se
+     * quedaba sin JSON, con lo que la pagina dejaba un modal de progreso
+     * congelado. Ahora se devuelve FALSE y el motivo queda en el errMsg.
+     *
+     * @param  string $sComando    Orden para el demonio
+     *
+     * @return mixed  FALSE si el demonio no responde, o su respuesta
+     */
+    private function _escribirDemonio($sComando)
+    {
 	$socket = $this->_getUpdater();
-	fwrite($socket, "clear\n");
-	return fgets($socket);
+	if (is_null($socket)) return FALSE;
+
+	$iWritten = @fwrite($socket, $sComando."\n");
+	if ($iWritten === FALSE) {
+	    $this->_errMsg = "(internal) Cannot write to the updater daemon";
+	    return FALSE;
+	}
+	$sRespuesta = fgets($socket);
+	if ($sRespuesta === FALSE) {
+	    $this->_errMsg = "(internal) No answer from the updater daemon";
+	    return FALSE;
+	}
+	return trim($sRespuesta);
     }
 
     function deleteActionTmp()

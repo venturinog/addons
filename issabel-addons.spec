@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 13
+Release: 14
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,14 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-14
+- Do not fail when the update daemon is not running. The writes to the daemon
+  did not check that the socket was open, so with the daemon down they died
+  with a TypeError of PHP 8 and the request answered with an error page
+  instead of JSON. The page then opened the progress dialog with an
+  undefined title and left it frozen at zero. The module now answers with
+  the reason and the page shows it in the notice of the theme.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-13
 - Install the update daemon as a systemd service. The package installed a
   SysV script that does not start on EL10: it needs

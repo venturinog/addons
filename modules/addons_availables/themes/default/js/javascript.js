@@ -275,6 +275,12 @@ function do_iniciarInstallUpdate()
 		    mostrar_mensaje(respuesta["error"],'error');
 		    do_checkStatus();
 		}
+		else if(!respuesta || respuesta["status"] === undefined){
+		    /* La respuesta no es la que se espera: el servidor no ha podido
+		     * hablar con el demonio actualizador. Mejor decirlo que dejar el
+		     * modal de progreso congelado en 0%. */
+		    mostrar_mensaje(issabel_addons_titulos.service_down,'error');
+		}
 		else{
 		    transaction_in_progress = true;
 		    mostrar_dialogo_progreso();
@@ -299,6 +305,12 @@ function do_iniciarUninstall()
 		else if(respuesta["error"]){
 		    mostrar_mensaje(respuesta["error"],'error');
 		    do_checkStatus();
+		}
+		else if(!respuesta || respuesta["status"] === undefined){
+		    /* La respuesta no es la que se espera: el servidor no ha podido
+		     * hablar con el demonio actualizador. Mejor decirlo que dejar el
+		     * modal de progreso congelado en 0%. */
+		    mostrar_mensaje(issabel_addons_titulos.service_down,'error');
 		}
 		else{
 		    transaction_in_progress = true;
@@ -512,6 +524,12 @@ function do_checkDependencies(serverId)
 		    else if(respuesta["error"]){
 			mostrar_mensaje(respuesta["error"],'error');
 			do_checkStatus();
+		    }
+		    else if(!respuesta || respuesta["status"] === undefined){
+		        /* La respuesta no es la que se espera: el servidor no ha podido
+		         * hablar con el demonio actualizador. Mejor decirlo que dejar el
+		         * modal de progreso congelado en 0%. */
+		        mostrar_mensaje(issabel_addons_titulos.service_down,'error');
 		    }
 		    else{
 			transaction_in_progress = true;

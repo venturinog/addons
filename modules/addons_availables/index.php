@@ -186,6 +186,7 @@ function renderAddonsPage($smarty, $module_name, $local_templates_dir)
         'success' => _tr('Success'),
         'warning' => _tr('Warning'),
         'info'    => _tr('Notice'),
+        'service_down' => _tr('The addon update service is not running.'),
     ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
     // Confirmacion que se pide antes de cancelar una transaccion en curso.
     $smarty->assign('ADDONS_CANCEL_CONFIRM', json_encode(
@@ -290,6 +291,16 @@ function do_listarAddons($smarty, $module_name, $local_templates_dir)
     return $json->encode($respuesta);
 }
 
+/* El demonio actualizador es el que instala, actualiza y desinstala los
+ * addons. Si no esta corriendo, la operacion no se puede hacer: se avisa en
+ * la pagina en vez de dejar el modal de progreso congelado. El motivo
+ * tecnico va al log, no a la pantalla. */
+function addonServiceError($oAddons)
+{
+    error_log('addons: the update daemon is not running: '.$oAddons->getErrMsg());
+    return _tr('The addon update service is not running.');
+}
+
 function do_iniciarInstallUpdate($smarty, $module_name, $local_templates_dir)
 {
     $name_rpm = getParameter("name_rpm");
@@ -309,12 +320,20 @@ function do_iniciarInstallUpdate($smarty, $module_name, $local_templates_dir)
     }
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
+    if(!is_array($status)){
+	$respuesta["error"] = addonServiceError($oAddons);
+	return $json->encode($respuesta);
+    }
     if($status["status"] == "busy"){
 	$respuesta["error"] = _tr("Sorry, another transaction is already in process");
 	return $json->encode($respuesta);
     }
     else{
 	$respuesta["status"] = $oAddons->installAddon($name_rpm);
+	if($respuesta["status"] === FALSE){
+	    $respuesta["error"] = addonServiceError($oAddons);
+	    return $json->encode($respuesta);
+	}
 	$user = $_SESSION["issabel_user"];
 	if(!$oAddons->saveActionTmp($name_rpm,"Installing/Updating", $user)){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
@@ -352,12 +371,20 @@ function do_iniciarUninstall($smarty, $module_name, $local_templates_dir)
     $oAddons = new paloSantoAddons();
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
+    if(!is_array($status)){
+	$respuesta["error"] = addonServiceError($oAddons);
+	return $json->encode($respuesta);
+    }
     if($status["status"] == "busy"){
 	$respuesta["error"] = _tr("Sorry, another transaction is already in process");
 	return $json->encode($respuesta);
     }
     else{
 	$respuesta["status"] = $oAddons->uninstallAddon($name_rpm);
+	if($respuesta["status"] === FALSE){
+	    $respuesta["error"] = addonServiceError($oAddons);
+	    return $json->encode($respuesta);
+	}
 	$user = $_SESSION["issabel_user"];
 	if(!$oAddons->saveActionTmp($name_rpm,"Uninstalling", $user)){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
@@ -389,12 +416,20 @@ function do_checkDependencies($smarty, $module_name, $local_templates_dir)
     }
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
+    if(!is_array($status)){
+	$respuesta["error"] = addonServiceError($oAddons);
+	return $json->encode($respuesta);
+    }
     if($status["status"] == "busy"){
 	$respuesta["error"] = _tr("Sorry, another transaction is already in process");
 	return $json->encode($respuesta);
     }
     else{
 	$respuesta["status"] = $oAddons->checkDependencies($name_rpm);
+	if($respuesta["status"] === FALSE){
+	    $respuesta["error"] = addonServiceError($oAddons);
+	    return $json->encode($respuesta);
+	}
 	$user = $_SESSION["issabel_user"];
 	if(!$oAddons->saveActionTmp($name_rpm,"Checking Dependencies", $user)){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
@@ -415,6 +450,15 @@ function do_checkStatus($smarty, $module_name, $local_templates_dir)
     $oAddons = new paloSantoAddons();
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
+    if(!is_array($status)){
+	// El demonio no responde: no hay estado que monitorizar. Sin esto la
+	// respuesta salia sin campo 'status' y la pagina se quedaba con el
+	// modal de progreso congelado. El JavaScript lee el motivo de
+	// 'error_description'.
+	$respuesta["status"] = "error";
+	$respuesta["error_description"] = array(addonServiceError($oAddons));
+	return $json->encode($respuesta);
+    }
     $respuesta["status"] = $status["status"];
     $action_tmp = $oAddons->getActionTmp();
     if(is_null($action_tmp)){
@@ -615,6 +659,10 @@ function do_cancelTransaction($smarty, $module_name, $local_templates_dir)
     $oAddons = new paloSantoAddons();
     $oAddons->updateStatusCache();
     $status = $oAddons->getStatusCache();
+    if(!is_array($status)){
+	$respuesta["error"] = addonServiceError($oAddons);
+	return $json->encode($respuesta);
+    }
     if($status["action"] == "applying"){
 	$respuesta["error"] = _tr("Sorry, you can not cancel the transaction on this stage");
 	return $json->encode($respuesta);
@@ -625,6 +673,10 @@ function do_cancelTransaction($smarty, $module_name, $local_templates_dir)
     }
     else{
 	$respuesta = $oAddons->cancelTransaction();
+	if($respuesta === FALSE){
+	    $respuesta["error"] = addonServiceError($oAddons);
+	    return $json->encode($respuesta);
+	}
 	if(!$oAddons->updateActionTmp("Cancelling",NULL,"Cancelling")){
 	    $respuesta["db_error"] = $oAddons->getErrMsg();
 	    return $json->encode($respuesta);

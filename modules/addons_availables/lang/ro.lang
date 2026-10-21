@@ -45,5 +45,6 @@ $arrLangModule=array(
 "Notice" => "Notificare",
 "Cancel transaction" => "Anulează tranzacția",
 "No addons have been published for Issabel %s yet." => "Încă nu au fost publicate module suplimentare pentru Issabel %s.",
+"The addon update service is not running." => "Serviciul de actualizare a modulelor suplimentare nu rulează.",
 );
 ?>

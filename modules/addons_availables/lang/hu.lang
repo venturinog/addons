@@ -45,5 +45,6 @@ $arrLangModule=array(
 "Notice" => "Értesítés",
 "Cancel transaction" => "Tranzakció megszakítása",
 "No addons have been published for Issabel %s yet." => "Az Issabel %s verzióhoz még nem jelent meg egyetlen kiegészítő sem.",
+"The addon update service is not running." => "A kiegészítő-frissítő szolgáltatás nem fut.",
 );
 ?>
