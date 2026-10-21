@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 5
+Release: 6
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -124,6 +124,12 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-6
+- Add the language keys the addon market code looks for and were missing from
+  the base file: "Invalid addon name" and "The system can not connect to the
+  Web Service resource...". The four language files of the module now have
+  the same keys, so the messages no longer fall back to the English text.
+
 * Fri Oct 16 2026 Issabel Foundation <info@issabel.org> - 6.0.0-5
 - Escape the rpm queryformat used to record the pre-version on upgrade.
   The VERSION and RELEASE macros were expanded at build time, so %pre always

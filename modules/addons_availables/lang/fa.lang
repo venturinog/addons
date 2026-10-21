@@ -63,6 +63,9 @@ $arrLangModule=array(
 "Location" => "Location",
 "Please wait..." => "لطفا صبر کنید ...",
 "Warning" => "اخطار",
-"Note" => "نوشته"
+"Note" => "نوشته",
+"Server id is not defined, you need to register your Issabel" => "شناسه سرور تعریف نشده است، شما باید Issabel خود را ثبت کنید",
+"Invalid addon name" => "نام افزونه نامعتبر است",
+"The system can not connect to the Web Service resource. Please check your Internet connection." => "سیستم نمی‌تواند به سرویس وب متصل شود. لطفاً اتصال اینترنت خود را بررسی کنید"
 );
 ?>
