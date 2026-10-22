@@ -61,6 +61,10 @@ class AppLogger
     // formato YYYY-MM-DD hh:mm
     function output($sCadena)
     {
+        // Tras close() el recurso queda en NULL. Los mensajes de ultima hora
+        // del apagado, como los del manejador de errores, no pueden reventar
+        // el final del demonio con un TypeError de fwrite.
+        if (is_null($this->LOGHANDLE)) return;
         fwrite($this->LOGHANDLE, date('Y-m-d H:i:s')." : ".(is_null($this->PREFIJO) ? '' : "($this->PREFIJO) ").$sCadena."\n");
     }
 

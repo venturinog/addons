@@ -151,6 +151,13 @@ fi
   passes the error context as the fifth argument, so any warning raised
   while the daemon ran, as the one of a closed socket on shutdown, died
   with an argument count error instead of reaching the log.
+- Keep the daemon stop from crashing. The error handler referenced the
+  deprecated E_STRICT constant and did not know the deprecation levels of
+  PHP 8, and its messages were still handed to a log already closed,
+  which died with a write to a NULL resource and left the unit as
+  failed. The map knows both levels, the strict check uses the number,
+  and the logger drops late messages instead of writing to a closed
+  file.
 
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
 - Accept the names of the addons that have more than one group. The rule
