@@ -136,6 +136,12 @@ fi
 * Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-16
 - Point the unit file at /run for the daemon PID. /var/run is a symlink to
   /run in EL10 and systemd warned about the legacy path on every start.
+- Fall back to an empty value for the page script variables. The template
+  and the PHP that assigns it travel together in the package, but partial
+  manual deployments have been seen with the template newer than the PHP:
+  the script then parsed an empty assignment, the whole block was dropped
+  and every action of the page, including the install button, became a
+  no-op. With the fallback the script parses and the page keeps working.
 
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
 - Accept the names of the addons that have more than one group. The rule

@@ -75,8 +75,14 @@
 </div>
 <div class="modal-backdrop" id="issabel_addons_backdrop" style="display: none;"></div>
 
+{* Las tres variables las asigna renderAddonsPage() y viajan por RPM
+juntos con el index.php que las asigna, pero se han visto despliegues a
+mano con la plantilla mas nueva que el PHP. El default no es para
+enmascarar un error de asignacion: es para que un arbol desordenado
+degrade (el script vive, solo faltara el texto de algun aviso) en lugar
+de abortar TODO el bloque y dejar la pagina sin sus funciones. *}
 <script type="text/javascript">
-var issabel_addons_titulos = {$ADDONS_ALERT_TITLES};
-var issabel_addons_mensajes = {$ADDONS_MESSAGES};
-var cancel_confirm = {$ADDONS_CANCEL_CONFIRM};
+var issabel_addons_titulos = {$ADDONS_ALERT_TITLES|default:'{}'};
+var issabel_addons_mensajes = {$ADDONS_MESSAGES|default:'{}'};
+var cancel_confirm = {$ADDONS_CANCEL_CONFIRM|default:''};
 </script>
