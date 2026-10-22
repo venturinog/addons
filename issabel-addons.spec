@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 17
+Release: 18
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,14 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-18
+- Open the cloud login popup at its designed size. The popup of the
+  unregistered branch asked for 540x335, a legacy height 70 pixels below
+  the one the registration form is built for (the menu register link and
+  the signup button already use 540x405), so the bottom of the form fell
+  out of the box. The framework popup container now scrolls as a safety
+  net as well.
+
 * Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-17
 - Warn instead of going silent when the cloud login popup cannot open.
   For an unregistered server the install button ends in showPopupCloudLogin(),
