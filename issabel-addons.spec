@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 15
+Release: 16
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,10 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-16
+- Point the unit file at /run for the daemon PID. /var/run is a symlink to
+  /run in EL10 and systemd warned about the legacy path on every start.
+
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
 - Accept the names of the addons that have more than one group. The rule
   allowed a single dash after the first group, so the catalogue entries

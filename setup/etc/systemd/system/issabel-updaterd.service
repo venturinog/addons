@@ -9,7 +9,10 @@ Wants=network-online.target
 # arranca systemd termina de inmediato y es el hijo el que sigue vivo. Por
 # eso el tipo es 'forking' y el PID se toma del fichero que escribe el.
 Type=forking
-PIDFile=/var/run/issupdaterd.pid
+# El demonio escribe su PID en /var/run/issupdaterd.pid y /var/run es un
+# enlace simbolico a /run en EL10: el fichero real es el mismo, pero
+# systemd avisa si la unidad referencia la ruta de legacy.
+PIDFile=/run/issupdaterd.pid
 # El demonio abre el socket tcp://localhost:20004, que es por donde el
 # módulo de la GUI le pide instalar, actualizar y desinstalar los addons.
 ExecStart=/usr/bin/php /opt/issabel/issabel-updater/issupdaterd
