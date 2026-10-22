@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 18
+Release: 19
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,13 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-19
+- Grow the cloud login popup to its real form height. The caller asked
+  for 405, the height tuned for the tenant theme, and the modern theme
+  controls left the bottom of the form cut below the box. The popup now
+  asks for 450, the size every login caller of the framework uses after
+  the same correction there.
+
 * Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-18
 - Open the cloud login popup at its designed size. The popup of the
   unregistered branch asked for 540x335, a legacy height 70 pixels below

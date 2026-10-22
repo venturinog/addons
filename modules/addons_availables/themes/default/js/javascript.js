@@ -205,7 +205,7 @@ function checkServerID(isPurchase)
             }
             var callback = (isPurchase) ? "do_checkDependencies" : "do_iniciarInstallUpdate";
             $('#callback').val(callback);
-            showPopupCloudLogin('',540,405);
+            showPopupCloudLogin('',540,450);
         }
     });
 }
