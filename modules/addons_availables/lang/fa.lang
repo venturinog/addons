@@ -72,5 +72,6 @@ $arrLangModule=array(
 "Cancel transaction" => "لغو تراکنش",
 "No addons have been published for Issabel %s yet." => "هنوز هیچ افزونه‌ای برای Issabel %s منتشر نشده است.",
 "The addon update service is not running." => "سرویس به‌روزرسانی افزونه‌ها در حال اجرا نیست.",
+"This Issabel server is not registered. Please register it before installing addons." => "این سرور Issabel ثبت نشده است. لطفاً پیش از نصب افزونه‌ها آن را ثبت کنید.",
 );
 ?>

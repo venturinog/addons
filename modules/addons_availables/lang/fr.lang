@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Cancel transaction" => "Annuler la transaction",
 "No addons have been published for Issabel %s yet." => "Aucun module complémentaire n'a encore été publié pour Issabel %s.",
 "The addon update service is not running." => "Le service de mise à jour des modules complémentaires n'est pas démarré.",
+"This Issabel server is not registered. Please register it before installing addons." => "Ce serveur Issabel n'est pas enregistré. Enregistrez-le avant d'installer des add-ons.",
 );
 ?>

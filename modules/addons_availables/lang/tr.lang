@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Cancel transaction" => "İşlemi iptal et",
 "No addons have been published for Issabel %s yet." => "Issabel %s için henüz hiçbir eklenti yayınlanmadı.",
 "The addon update service is not running." => "Eklenti güncelleme hizmeti çalışmıyor.",
+"This Issabel server is not registered. Please register it before installing addons." => "Bu Issabel sunucusu kayıtlı değil. Eklentileri yüklemeden önce kaydettirin.",
 );
 ?>

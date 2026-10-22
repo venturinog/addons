@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Cancel transaction" => "트랜잭션 취소",
 "No addons have been published for Issabel %s yet." => "Issabel %s 용 애드온이 아직 게시되지 않았습니다.",
 "The addon update service is not running." => "애드온 업데이트 서비스가 실행 중이 아닙니다.",
+"This Issabel server is not registered. Please register it before installing addons." => "이 Issabel 서버가 등록되어 있지 않습니다. 애드온을 설치하기 전에 서버를 등록하십시오.",
 );
 ?>

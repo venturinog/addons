@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Cancel transaction" => "Ακύρωση συναλλαγής",
 "No addons have been published for Issabel %s yet." => "Δεν έχουν δημοσιευτεί ακόμη πρόσθετα για το Issabel %s.",
 "The addon update service is not running." => "Η υπηρεσία ενημέρωσης προσθέτων δεν εκτελείται.",
+"This Issabel server is not registered. Please register it before installing addons." => "Αυτός ο διακομιστής Issabel δεν είναι καταχωρημένος. Καταχωρήστε τον πριν εγκαταστήσετε πρόσθετα.",
 );
 ?>

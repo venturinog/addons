@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 16
+Release: 17
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,15 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-17
+- Warn instead of going silent when the cloud login popup cannot open.
+  For an unregistered server the install button ends in showPopupCloudLogin(),
+  whose markup (neo-modal-issabel-popup-* nodes) belongs to the page shell of
+  the framework. Page templates that do not carry that markup made the click
+  a silent no-op: the AJAX round trip ran, but nothing appeared. The module
+  now shows a theme alert asking to register the server when the popup nodes
+  are missing, in every supported language.
+
 * Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-16
 - Point the unit file at /run for the daemon PID. /var/run is a symlink to
   /run in EL10 and systemd warned about the legacy path on every start.

@@ -72,5 +72,6 @@ $arrLangModule=array(
 "Cancel transaction" => "Cancelar la transacción",
 "No addons have been published for Issabel %s yet." => "Todavía no se ha publicado ningún addon para Issabel %s.",
 "The addon update service is not running." => "El servicio de actualización de addons no está en ejecución.",
+"This Issabel server is not registered. Please register it before installing addons." => "Este servidor Issabel no está registrado. Regístrelo antes de instalar addons.",
 );
 ?>

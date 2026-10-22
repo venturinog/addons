@@ -194,6 +194,15 @@ function checkServerID(isPurchase)
             else
                 do_iniciarInstallUpdate();
         } else{
+            /* El popup de login a la nube es maqueta de la shell de pagina
+             * completa (base.js -> ShowModalPopUP trabaja con los nodos
+             * neo-modal-issabel-popup-*). Si el documento del modulo no la
+             * trae, jQuery operaria sobre nodos inexistentes: ni error en
+             * consola ni respuesta visual. Degrade a un aviso del tema. */
+            if ($('.neo-modal-issabel-popup-content').length === 0) {
+                mostrar_mensaje(issabel_addons_mensajes.not_registered, 'warning');
+                return;
+            }
             var callback = (isPurchase) ? "do_checkDependencies" : "do_iniciarInstallUpdate";
             $('#callback').val(callback);
             showPopupCloudLogin('',540,335);

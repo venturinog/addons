@@ -194,7 +194,8 @@ function renderAddonsPage($smarty, $module_name, $local_templates_dir)
         JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
     // Mensajes que el JavaScript necesita y que no son titulos de aviso.
     $smarty->assign('ADDONS_MESSAGES', json_encode(array(
-        'invalid_name' => _tr('Invalid addon name'),
+        'invalid_name'   => _tr('Invalid addon name'),
+        'not_registered' => _tr('This Issabel server is not registered. Please register it before installing addons.'),
     ), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS));
     return $smarty->fetch($local_templates_dir.'/reporte_addons.tpl');
 }

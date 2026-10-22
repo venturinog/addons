@@ -46,5 +46,6 @@ $arrLangModule=array(
 "Cancel transaction" => "取消事务",
 "No addons have been published for Issabel %s yet." => "尚未为 Issabel %s 发布任何插件。",
 "The addon update service is not running." => "插件更新服务未在运行。",
+"This Issabel server is not registered. Please register it before installing addons." => "此 Issabel 服务器尚未注册，请在安装插件前先注册。",
 );
 ?>
