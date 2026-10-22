@@ -147,6 +147,10 @@ fi
   releasever for the cachedir line, and neither the interpreter nor the
   module exist in EL10, so every start logged a command not found and the
   markers stayed unset.
+- Expect the PHP 8 error handler signature in the daemon. PHP 8 no longer
+  passes the error context as the fifth argument, so any warning raised
+  while the daemon ran, as the one of a closed socket on shutdown, died
+  with an argument count error instead of reaching the log.
 
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
 - Accept the names of the addons that have more than one group. The rule

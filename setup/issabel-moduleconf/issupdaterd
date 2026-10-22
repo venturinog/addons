@@ -440,7 +440,10 @@ function iniciarTarea($sNombreDemonio, $sNombreTarea, $infoConfig, &$oMainLog)
 }
 
 // Procedimiento que usa el log abierto para reportar el error que haya ocurrido
-function daemonErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
+// PHP 8 dejo de pasar el contexto como quinto argumento del manejador de
+// errores: sin el valor por defecto, cualquier warning del demonio muere en
+// su lugar con un ArgumentCountError en vez de quedar en el log.
+function daemonErrorHandler($errno, $errmsg, $filename, $linenum, $vars = NULL)
 {
     global $goAppLog;
     $errortype = array (
