@@ -142,6 +142,11 @@ fi
   the script then parsed an empty assignment, the whole block was dropped
   and every action of the page, including the install button, became a
   no-op. With the fallback the script parses and the page keeps working.
+- Ask uname and /etc/os-release for the yum cachedir markers. The daemon
+  ran a Python 2 snippet with the yum module to figure out basearch and
+  releasever for the cachedir line, and neither the interpreter nor the
+  module exist in EL10, so every start logged a command not found and the
+  markers stayed unset.
 
 * Wed Oct 21 2026 Issabel Foundation <info@issabel.org> - 6.0.0-15
 - Accept the names of the addons that have more than one group. The rule

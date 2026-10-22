@@ -61,25 +61,24 @@ class IssabelInstallerProcess extends AbstractProcess
 
         $this->_conexiones = array();
 
-        // El siguiente comando ejecuta python para averiguar los valores de
-        // $basearch y $releasever que se referencian en /etc/yum.conf en Fedora 17
-        $basearch = $releasever = NULL;
-        $sCmd = "python -c '".
-            "import yum; ".
-            "yb = yum.YumBase(); ".
-            "ba = yb.conf.yumvar[\"basearch\"]; ".
-            "rv = yb.conf.yumvar[\"releasever\"]; ".
-            "print \"BASEARCH-RELEASEVER:\", ba, rv;'";
-        $output = $retval = NULL;
-        exec($sCmd, $output, $retval);
-        foreach ($output as $s) {
-            $regs = NULL;
-            if (preg_match('/^BASEARCH-RELEASEVER:\s+(\S+)\s+(\S+)/', $s, $regs)) {
-                $basearch = $regs[1];
-                $releasever = $regs[2];
+        // $basearch y $releasever son los marcadores que puede referenciar la
+        // linea cachedir de /etc/yum.conf (un enlace a dnf/dnf.conf en EL10).
+        // Antes se pedian a un modulo yum de Python 2, y el interprete con el
+        // modulo ya no existe en EL10, de modo que en cada arranque el log
+        // llevaba "sh: python: command not found" y los marcadores quedaban
+        // en NULL. La arquitectura sale de uname y el release de /etc/os-release,
+        // como los deduce el propio dnf.
+        $basearch = trim((string)shell_exec('uname -m'));
+        $releasever = NULL;
+        if (is_readable('/etc/os-release')) {
+            foreach (file('/etc/os-release', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $s) {
+                if (preg_match('/^VERSION_ID=("?)([^"]+)\1\s*$/', trim($s), $regs)) {
+                    $releasever = $regs[2];
+                    break;
+                }
             }
         }
-        if (!is_null($basearch) && file_exists('/etc/yum.conf')) {
+        if ($basearch !== '' && !is_null($releasever) && is_file('/etc/yum.conf')) {
             foreach (file('/etc/yum.conf') as $s) {
                 $regs = NULL;
                 if (preg_match('/^cachedir\s*=\s*(.+)/', trim($s), $regs)) {
