@@ -486,7 +486,7 @@ function checkExternIp($text) {
     $configured_externip = configured_externip();
 
     $externip = '';
-    $fn = "http://myip.issabel.org:5060/whatismyip.php";
+    $fn = "http://myip.issabel.ar:5060/whatismyip.php";
     $ip = file_get_contents($fn);
 
     if($configured_externip=='') { return; }

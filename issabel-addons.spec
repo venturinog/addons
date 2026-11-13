@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 19
+Release: 20
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,10 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Fri Nov 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-20
+- Point the addons catalog webservice and the update daemon public IP lookup
+  to the issabel.ar hosts.
+
 * Thu Oct 22 2026 Issabel Foundation <info@issabel.org> - 6.0.0-19
 - Grow the cloud login popup to its real form height. The caller asked
   for 405, the height tuned for the tenant theme, and the modern theme
