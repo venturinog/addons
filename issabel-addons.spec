@@ -3,7 +3,7 @@
 Summary: Issabel Addons
 Name: issabel-addons
 Version: 6.0.0
-Release: 20
+Release: 21
 License: GPL
 Group:   Applications/System
 Source0: issabel-%{modname}-%{version}.tar.gz
@@ -133,6 +133,11 @@ fi
 /etc/yum.repos.d/*
 
 %changelog
+* Mon Nov 16 2026 Issabel Foundation <info@issabel.org> - 6.0.0-21
+- Point the commercial addons repository at release 6, using the
+  mirror.issabel.ar mirrorlist and the commercial repository, disabled by
+  default.
+
 * Fri Nov 13 2026 Issabel Foundation <info@issabel.org> - 6.0.0-20
 - Point the addons catalog webservice and the update daemon public IP lookup
   to the issabel.ar hosts.
